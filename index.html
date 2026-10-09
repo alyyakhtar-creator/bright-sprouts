@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8ff">
+  <title>Bright Sprouts - Little Learning Adventure</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #263353;
+      --muted: #78839b;
+      --blue: #5475e8;
+      --blue-dark: #3f5fcf;
+      --paper: #fff;
+      --line: #e9edf7;
+      --green: #27845c;
+      --green-pale: #e8f8ef;
+      --red: #bf5361;
+      --red-pale: #fff0f0;
+      --shadow: 0 20px 55px rgba(49, 64, 113, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 28px 18px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 10% 10%, #eaf1ff 0, transparent 32%),
+        radial-gradient(ellipse at 90% 85%, #e9f8ef 0, transparent 28%),
+        #f7f8fc;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .app {
+      width: min(100%, 760px);
+      overflow: hidden;
+      border: 1px solid rgba(226, 231, 244, .9);
+      border-radius: 30px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      min-height: 78px;
+      padding: 18px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: #edf2ff;
+      font-size: 23px;
+    }
+
+    .score {
+      padding: 10px 15px;
+      border: 1px solid #f4e5b7;
+      border-radius: 99px;
+      background: #fff9e9;
+      color: #745511;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main { padding: 33px 40px 38px; }
+
+    .intro { text-align: center; }
+
+    .eyebrow {
+      margin: 0 0 9px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 5vw, 40px);
+      letter-spacing: -1.6px;
+      line-height: 1.12;
+    }
+
+    .subtitle {
+      margin: 12px 0 25px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .subjects {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin: 0 0 25px;
+    }
+
+    .subject {
+      padding: 10px 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 99px;
+      background: white;
+      color: #59647c;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 750;
+      transition: .18s ease;
+    }
+
+    .subject:hover { border-color: #cbd5fc; transform: translateY(-1px); }
+    .subject[aria-pressed="true"] {
+      border-color: var(--blue);
+      background: #eef1ff;
+      color: #3856c0;
+      box-shadow: 0 3px 10px rgba(84, 117, 232, .12);
+    }
+
+    .game-card {
+      padding: 25px 27px 24px;
+      border: 1px solid #e8ecf5;
+      border-radius: 23px;
+      background: #fbfcff;
+    }
+
+    .round-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .progress-track {
+      height: 9px;
+      overflow: hidden;
+      margin: 11px 0 25px;
+      border-radius: 99px;
+      background: #e9edf7;
+    }
+
+    .progress-fill {
+      width: 10%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #6684f3, #8d78e8);
+      transition: width .35s ease;
+    }
+
+    .question-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 21px;
+      background: #edf2ff;
+      font-size: 34px;
+    }
+
+    .question {
+      min-height: 60px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: clamp(21px, 4vw, 27px);
+      font-weight: 850;
+      letter-spacing: -.5px;
+      line-height: 1.3;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px;
+    }
+
+    .answer {
+      min-height: 58px;
+      padding: 11px 9px;
+      border: 1.5px solid #e3e8f2;
+      border-radius: 15px;
+      background: white;
+      color: #34415f;
+      cursor: pointer;
+      font-size: 19px;
+      font-weight: 800;
+      transition: .16s ease;
+    }
+
+    .answer:hover:not(:disabled) {
+      border-color: #9aaef9;
+      background: #f5f7ff;
+      transform: translateY(-2px);
+    }
+
+    .answer:focus-visible, .subject:focus-visible, .next:focus-visible, .hint:focus-visible {
+      outline: 3px solid #b8c6ff;
+      outline-offset: 3px;
+    }
+
+    .answer:disabled { cursor: default; }
+    .answer.correct { border-color: #71c798; background: var(--green-pale); color: var(--green); }
+    .answer.incorrect { border-color: #e39aa1; background: var(--red-pale); color: var(--red); }
+
+    .feedback {
+      min-height: 30px;
+      padding-top: 14px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .feedback.good { color: var(--green); }
+    .feedback.try { color: var(--red); }
+
+    .actions {
+      min-height: 49px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hint {
+      padding: 9px 13px;
+      border: 0;
+      background: transparent;
+      color: #637195;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .hint:hover { color: var(--blue-dark); }
+
+    .next {
+      min-width: 185px;
+      padding: 13px 20px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--blue);
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 850;
+      box-shadow: 0 6px 15px rgba(84, 117, 232, .2);
+      transition: .16s ease;
+    }
+
+    .next:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .hidden { display: none !important; }
+
+    .finish { padding: 35px 15px 24px; text-align: center; }
+    .finish-icon { margin-bottom: 10px; font-size: 66px; }
+    .finish h2 { margin: 0; font-size: 34px; letter-spacing: -1px; }
+    .finish p { margin: 11px auto 23px; color: var(--muted); font-size: 16px; line-height: 1.5; }
+
+    .footer {
+      padding: 17px 20px 20px;
+      color: #8b94a9;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 12px; }
+      .app { border-radius: 24px; }
+      .topbar { min-height: 68px; padding: 13px 18px; }
+      .brand { font-size: 15px; }
+      .brand-mark { width: 38px; height: 38px; }
+      .score { padding: 9px 11px; font-size: 12px; }
+      main { padding: 27px 17px 25px; }
+      .subtitle { margin-bottom: 20px; font-size: 14px; }
+      .subjects { gap: 7px; margin-bottom: 20px; }
+      .subject { padding: 9px 11px; font-size: 12px; }
+      .game-card { padding: 20px 15px 18px; border-radius: 19px; }
+      .answers { gap: 7px; }
+      .answer { min-height: 54px; font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">🌱</span><span>Bright Sprouts</span></div>
+      <div class="score" aria-live="polite">⭐ Stars: <span id="score">0</span></div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">A little learning adventure</p>
+        <h1>Ready, little explorer?</h1>
+        <p class="subtitle">Pick a subject and see how many stars you can earn!</p>
+      </section>
+
+      <nav class="subjects" aria-label="Choose a subject">
+        <button class="subject" type="button" data-subject="mixed" aria-pressed="true">🌈 Mix it up</button>
+        <button class="subject" type="button" data-subject="math" aria-pressed="false">🔢 Math</button>
+        <button class="subject" type="button" data-subject="reading" aria-pressed="false">📚 Words</button>
+        <button class="subject" type="button" data-subject="science" aria-pressed="false">🌍 Science</button>
+      </nav>
+
+      <section class="game-card" aria-label="Quiz game">
+        <div id="playing">
+          <div class="round-row"><span id="round">Question 1 of 10</span><span id="category">Getting started!</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Game progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+            <div class="progress-fill" id="progress"></div>
+          </div>
+          <div class="question-icon" id="icon" aria-hidden="true">🐝</div>
+          <h2 class="question" id="question">Loading a fun question...</h2>
+          <div class="answers" id="answers" role="group" aria-label="Answer choices"></div>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+          <div class="actions">
+            <button class="hint" id="hint" type="button">💡 Give me a hint</button>
+            <button class="next hidden" id="next" type="button">Next question →</button>
+          </div>
+        </div>
+        <div class="finish hidden" id="finish" aria-live="polite">
+          <div class="finish-icon" id="finishIcon" aria-hidden="true">🎉</div>
+          <h2 id="finishTitle">Amazing work!</h2>
+          <p id="finishMessage"></p>
+          <button class="next" id="playAgain" type="button">Play again ↻</button>
+        </div>
+      </section>
+      <div class="footer">Every try helps your brain grow. Have fun! 🌼</div>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const TOTAL = 10;
+      const praise = ["Brilliant!", "You got it!", "Super thinking!", "Fantastic!", "That's right!", "Wow, great job!"];
+      const bank = {
+        math: [
+          { icon: "🐞", q: "You see 3 ladybugs, then 4 more join. How many now?", a: "7", choices: ["6", "7", "8"], hint: "Count on from 3: 4, 5, 6, 7!" },
+          { icon: "🍎", q: "There are 9 apples. You eat 2. How many are left?", a: "7", choices: ["6", "7", "8"], hint: "Take 2 away from 9." },
+          { icon: "🦆", q: "What number comes just before 12?", a: "11", choices: ["10", "11", "13"], hint: "Count backward: 12, ..." },
+          { icon: "⭐", q: "How many sides does a triangle have?", a: "3", choices: ["2", "3", "4"], hint: "A tri-angle has three corners." },
+          { icon: "🐸", q: "2 frogs have 2 legs each. How many legs altogether?", a: "4", choices: ["2", "4", "6"], hint: "Count two legs, then two more." },
+          { icon: "🍪", q: "You have 5 cookies and get 5 more. How many cookies?", a: "10", choices: ["8", "9", "10"], hint: "Five fingers on one hand, five on the other!" },
+          { icon: "🎈", q: "Which number is bigger: 14 or 9?", a: "14", choices: ["9", "14", "They are equal"], hint: "Count up: which number comes later?" },
+          { icon: "🐠", q: "A fish has 6 blue spots and 1 yellow spot. How many spots?", a: "7", choices: ["6", "7", "8"], hint: "Add the blue and yellow spots together." },
+          { icon: "🧁", q: "There are 8 cupcakes. 3 are eaten. How many are left?", a: "5", choices: ["4", "5", "6"], hint: "Count back three from eight." },
+          { icon: "🌷", q: "What is 10 + 2?", a: "12", choices: ["11", "12", "13"], hint: "Start at ten and count two more." },
+          { icon: "🚂", q: "A train has 4 cars. 2 more join. How many cars?", a: "6", choices: ["5", "6", "7"], hint: "Add 2 to 4." },
+          { icon: "🦋", q: "What number is between 7 and 9?", a: "8", choices: ["6", "8", "10"], hint: "Count: 7, ..., 9." }
+        ],
+        reading: [
+          { icon: "🐱", q: "Which word rhymes with 'cat'?", a: "hat", choices: ["hat", "cup", "dog"], hint: "It sounds like 'h' + 'at'." },
+          { icon: "🌙", q: "Which word means the opposite of 'big'?", a: "small", choices: ["tall", "small", "fast"], hint: "A tiny mouse is the opposite size of a big elephant." },
+          { icon: "🐶", q: "Which letter does 'sun' start with?", a: "S", choices: ["M", "S", "T"], hint: "Say 'sun' slowly. What sound starts it?" },
+          { icon: "📖", q: "Which one is an action word?", a: "jump", choices: ["blue", "jump", "soft"], hint: "An action word tells what someone can do." },
+          { icon: "🍰", q: "Which word rhymes with 'cake'?", a: "snake", choices: ["snake", "sock", "kite"], hint: "They both end with the 'ake' sound." },
+          { icon: "🐻", q: "What is the opposite of 'hot'?", a: "cold", choices: ["warm", "cold", "bright"], hint: "Think of snow on a chilly day." },
+          { icon: "🦊", q: "Which word starts with the same sound as 'fish'?", a: "fun", choices: ["fun", "cat", "dog"], hint: "Listen for the 'f' sound." },
+          { icon: "🌧️", q: "What do we call water falling from clouds?", a: "rain", choices: ["snow", "rain", "wind"], hint: "You might need an umbrella!" },
+          { icon: "🐝", q: "Which word rhymes with 'bee'?", a: "tree", choices: ["tree", "bug", "buzz"], hint: "A tall plant with leaves makes this sound." },
+          { icon: "🎨", q: "Which word describes the color of grass?", a: "green", choices: ["green", "sleep", "sing"], hint: "It starts with the same sound as 'go'." },
+          { icon: "🐸", q: "What is the plural of 'frog'?", a: "frogs", choices: ["frog", "frogs", "froges"], hint: "For most words, add an 's' to mean more than one." },
+          { icon: "🍋", q: "Which word describes how a lemon tastes?", a: "sour", choices: ["sweet", "sour", "soft"], hint: "It can make your cheeks pucker!" }
+        ],
+        science: [
+          { icon: "🌱", q: "What do plants need to grow?", a: "Sunlight", choices: ["Sunlight", "Shoes", "Music"], hint: "Plants get bright energy from the sky." },
+          { icon: "🐟", q: "Where does a fish live?", a: "In water", choices: ["In a tree", "In water", "In a nest"], hint: "Fish swim and breathe in this." },
+          { icon: "☀️", q: "What gives Earth light during the day?", a: "The Sun", choices: ["The Moon", "The Sun", "A starfish"], hint: "It is a star in our sky." },
+          { icon: "🦋", q: "What does a caterpillar turn into?", a: "A butterfly", choices: ["A butterfly", "A bird", "A flower"], hint: "It has colorful wings when it grows up." },
+          { icon: "🌧️", q: "What do we call frozen rain that falls as soft flakes?", a: "Snow", choices: ["Fog", "Snow", "Steam"], hint: "It is white, cold, and fun to play in." },
+          { icon: "🐶", q: "Which body part helps you smell a flower?", a: "Nose", choices: ["Elbow", "Nose", "Knee"], hint: "Take a sniff!" },
+          { icon: "🐸", q: "Which animal can live both on land and in water?", a: "Frog", choices: ["Frog", "Eagle", "Horse"], hint: "It hops and says 'ribbit'." },
+          { icon: "🌳", q: "Which part of a tree grows under the ground?", a: "Roots", choices: ["Leaves", "Roots", "Fruit"], hint: "They help hold the tree in the soil." },
+          { icon: "🦉", q: "Which animal is awake mostly at night?", a: "Owl", choices: ["Owl", "Bee", "Chicken"], hint: "This bird says 'whoo' in the dark." },
+          { icon: "🧊", q: "What does ice become when it gets warm?", a: "Water", choices: ["Sand", "Water", "A leaf"], hint: "It melts into a liquid you can drink." },
+          { icon: "🐝", q: "What do bees collect from flowers?", a: "Nectar", choices: ["Pebbles", "Nectar", "Snow"], hint: "They use it to help make honey." },
+          { icon: "🌍", q: "What planet do we live on?", a: "Earth", choices: ["Mars", "Earth", "The Moon"], hint: "Our home planet has lots of oceans." }
+        ]
+      };
+
+      const elements = {
+        score: document.getElementById("score"),
+        round: document.getElementById("round"),
+        category: document.getElementById("category"),
+        progress: document.getElementById("progress"),
+        progressBar: document.querySelector('[role="progressbar"]'),
+        icon: document.getElementById("icon"),
+        question: document.getElementById("question"),
+        answers: document.getElementById("answers"),
+        feedback: document.getElementById("feedback"),
+        hint: document.getElementById("hint"),
+        next: document.getElementById("next"),
+        playing: document.getElementById("playing"),
+        finish: document.getElementById("finish"),
+        finishIcon: document.getElementById("finishIcon"),
+        finishTitle: document.getElementById("finishTitle"),
+        finishMessage: document.getElementById("finishMessage")
+      };
+
+      let subject = "mixed";
+      let questions = [];
+      let round = 0;
+      let stars = 0;
+      let answered = false;
+
+      function shuffled(items) {
+        const result = items.slice();
+        for (let i = result.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [result[i], result[j]] = [result[j], result[i]];
+        }
+        return result;
+      }
+
+      function makeRound() {
+        const selected = subject === "mixed"
+          ? shuffled(["math", "reading", "science", "math", "reading", "science", "math", "reading", "science", "math"])
+          : Array(TOTAL).fill(subject);
+
+        const pools = {
+          math: shuffled(bank.math),
+          reading: shuffled(bank.reading),
+          science: shuffled(bank.science)
+        };
+        const counts = { math: 0, reading: 0, science: 0 };
+        questions = selected.map((category) => {
+          const question = pools[category][counts[category]++];
+          return { ...question, category };
+        });
+        round = 0;
+        stars = 0;
+        elements.score.textContent = "0";
+        elements.playing.classList.remove("hidden");
+        elements.finish.classList.add("hidden");
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        const item = questions[round];
+        answered = false;
+        elements.round.textContent = `Question ${round + 1} of ${TOTAL}`;
+        elements.category.textContent = { math: "Math", reading: "Words", science: "Science" }[item.category];
+        elements.progress.style.width = `${(round / TOTAL) * 100}%`;
+        elements.progressBar.setAttribute("aria-valuenow", String(round));
+        elements.icon.textContent = item.icon;
+        elements.question.textContent = item.q;
+        elements.feedback.textContent = "";
+        elements.feedback.className = "feedback";
+        elements.hint.classList.remove("hidden");
+        elements.hint.disabled = false;
+        elements.hint.textContent = "💡 Give me a hint";
+        elements.next.classList.add("hidden");
+        elements.answers.replaceChildren();
+
+        shuffled(item.choices).forEach((choice) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "answer";
+          button.textContent = choice;
+          button.addEventListener("click", () => chooseAnswer(button, choice, item));
+          elements.answers.append(button);
+        });
+      }
+
+      function chooseAnswer(button, choice, item) {
+        if (answered) return;
+        answered = true;
+        const correct = choice === item.a;
+        elements.answers.querySelectorAll("button").forEach((answer) => {
+          answer.disabled = true;
+          if (answer.textContent === item.a) answer.classList.add("correct");
+        });
+        if (correct) {
+          stars += 1;
+          elements.score.textContent = String(stars);
+          elements.feedback.textContent = `${praise[Math.floor(Math.random() * praise.length)]} ⭐`;
+          elements.feedback.classList.add("good");
+        } else {
+          button.classList.add("incorrect");
+          elements.feedback.textContent = `Good try! The answer is ${item.a}. Keep going!`;
+          elements.feedback.classList.add("try");
+        }
+        elements.hint.classList.add("hidden");
+        elements.next.textContent = round === TOTAL - 1 ? "See my stars! →" : "Next question →";
+        elements.next.classList.remove("hidden");
+        elements.next.focus();
+      }
+
+      function showHint() {
+        if (answered) return;
+        const item = questions[round];
+        elements.feedback.textContent = item.hint;
+        elements.feedback.className = "feedback";
+        elements.hint.textContent = "💡 Hint shown";
+        elements.hint.disabled = true;
+      }
+
+      function showFinish() {
+        elements.playing.classList.add("hidden");
+        elements.finish.classList.remove("hidden");
+        elements.progress.style.width = "100%";
+        elements.progressBar.setAttribute("aria-valuenow", String(TOTAL));
+        if (stars === TOTAL) {
+          elements.finishIcon.textContent = "🏆";
+          elements.finishTitle.textContent = "Superstar!";
+          elements.finishMessage.textContent = `You earned all ${TOTAL} stars! Your brain is growing brighter every day.`;
+        } else if (stars >= 6) {
+          elements.finishIcon.textContent = "🎉";
+          elements.finishTitle.textContent = "Amazing work!";
+          elements.finishMessage.textContent = `You earned ${stars} out of ${TOTAL} stars. Every question helped your brain grow!`;
+        } else {
+          elements.finishIcon.textContent = "🌟";
+          elements.finishTitle.textContent = "You did it!";
+          elements.finishMessage.textContent = `You earned ${stars} out of ${TOTAL} stars. Want to play again and discover even more?`;
+        }
+        document.getElementById("playAgain").focus();
+      }
+
+      document.querySelectorAll(".subject").forEach((button) => {
+        button.addEventListener("click", () => {
+          subject = button.dataset.subject;
+          document.querySelectorAll(".subject").forEach((other) => {
+            other.setAttribute("aria-pressed", String(other === button));
+          });
+          makeRound();
+        });
+      });
+      elements.hint.addEventListener("click", showHint);
+      elements.next.addEventListener("click", () => {
+        if (round < TOTAL - 1) {
+          round += 1;
+          renderQuestion();
+        } else {
+          showFinish();
+        }
+      });
+      document.getElementById("playAgain").addEventListener("click", makeRound);
+
+      makeRound();
+    })();
+  </script>
+</body>
+</html>
