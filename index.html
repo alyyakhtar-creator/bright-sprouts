@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f8ff">
+  <meta name="description" content="A fun little learning adventure with math, word, and science games for kids.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Bright Sprouts">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <title>Bright Sprouts - Little Learning Adventure</title>
   <style>
     :root {
@@ -122,6 +129,29 @@
       gap: 9px;
       margin: 0 0 25px;
     }
+
+    .install-note {
+      margin: -8px auto 22px;
+      color: #637195;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .install-button {
+      margin-left: 7px;
+      padding: 6px 11px;
+      border: 1px solid #dce3ff;
+      border-radius: 99px;
+      background: #f1f4ff;
+      color: #3856c0;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .install-button:hover { background: #e5eaff; }
+    .install-button[hidden] { display: none; }
 
     .subject {
       padding: 10px 14px;
@@ -302,6 +332,7 @@
       .subtitle { margin-bottom: 20px; font-size: 14px; }
       .subjects { gap: 7px; margin-bottom: 20px; }
       .subject { padding: 9px 11px; font-size: 12px; }
+      .install-note { margin-top: -5px; font-size: 12px; }
       .game-card { padding: 20px 15px 18px; border-radius: 19px; }
       .answers { gap: 7px; }
       .answer { min-height: 54px; font-size: 16px; }
@@ -332,6 +363,10 @@
         <button class="subject" type="button" data-subject="reading" aria-pressed="false">📚 Words</button>
         <button class="subject" type="button" data-subject="science" aria-pressed="false">🌍 Science</button>
       </nav>
+      <p class="install-note">
+        📲 Android: in Chrome, tap ⋮ then <strong>Install app</strong> or <strong>Add to Home screen</strong>.
+        <button class="install-button" id="installButton" type="button" hidden>Install app</button>
+      </p>
 
       <section class="game-card" aria-label="Quiz game">
         <div id="playing">
@@ -567,6 +602,33 @@
         }
       });
       document.getElementById("playAgain").addEventListener("click", makeRound);
+
+      let installPrompt;
+      const installButton = document.getElementById("installButton");
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        installPrompt = event;
+        installButton.hidden = false;
+      });
+      installButton.addEventListener("click", async () => {
+        if (!installPrompt) return;
+        await installPrompt.prompt();
+        await installPrompt.userChoice;
+        installPrompt = null;
+        installButton.hidden = true;
+      });
+      window.addEventListener("appinstalled", () => {
+        installPrompt = null;
+        installButton.hidden = true;
+      });
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js").catch((error) => {
+            console.error("Bright Sprouts could not enable offline support:", error);
+          });
+        });
+      }
 
       makeRound();
     })();
